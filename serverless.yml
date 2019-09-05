@@ -1,0 +1,42 @@
+#service: using-ses
+
+#provider:
+#  name: aws
+#  runtime: python3.7
+#
+#functions:
+#  hello:
+#    handler: handler.hello
+
+service: using-kms # NOTE: update this with your service name
+provider:
+  name: aws
+  runtime: python3.7
+  stage: dev
+  region: ''
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource: "*" 
+        
+  environment:
+    REGION_NAME: ''  
+    ACCESS_KEY: ''  
+    SECRET_KEY: ''
+
+
+functions:
+  sendEmail:
+    handler: handler.sendEmail
+    description: This function will send an email
+    events:
+      - http:
+          path: send-email
+          method: post
+          integration: lambda
+          cors: true
+          response:
+            headers:
+              "Access-Control-Allow_Origin": "'*'"
